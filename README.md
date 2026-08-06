@@ -3,6 +3,8 @@
 > 一个会下蛋的 skill：它不生成功能，它生下会自我进化的 agent。
 > A skill that lays eggs: it doesn't build features - it births agents that evolve themselves.
 
+![image-20260806213321810](./assets/image-20260806213321810.png)
+
 ## 这个故事从哪来 / Origin Story
 
 这个 skill 诞生于一份手写的踩坑笔记。作者在创建了很多个 agent 之后，发现了同样的模式一再重演：
@@ -26,6 +28,8 @@ This skill was born from a handwritten list of hard-earned lessons. After creati
 
 Every agent is **christened before it is born** - a function-fitting, mythically charged name, the way *ouroboros* names itself. Drawn from myth, cosmology, alchemy, biology, or physics; one or two words with a story behind them (a data-devouring agent might be *Leviathan*, a defensive one *Aegis*). The name becomes the title line of `AGENTS.md`.
 
+![image-20260806213045905](./assets/image-20260806213045905.png)
+
 ## 九条宪法原则 / The Nine Principles
 
 | # | 原则 | Principle |
@@ -40,15 +44,18 @@ Every agent is **christened before it is born** - a function-fitting, mythically
 | 8 | 成熟的经验固化为脚本 | Mature Knowledge Becomes Scripts |
 | 9 | 经验向下沉淀，不进宪法 | Experience Flows Downward |
 
+![image-20260806213141493](./assets/image-20260806213141493.png)
+
 ## 三步创世仪式 / The Three-Step Genesis Ritual
 
 1. **需求澄清门** - 需求不清，一行代码不生。先问清楚领域、任务、边界。
 2. **站在巨人肩膀上** - 先调研成熟方案与现成 skill，能借力的绝不重造。
 3. **生成脚手架** - 先按**命名铁律**为 agent 赐名，再交付 `AGENTS.md`（宪法，首行即代号）+ `CLAUDE.md`（一行 `@AGENTS.md` 引用，Claude 家族同源共治）+ `skills/`（流水线站点）。
+4. **Requirement Gate** - vague requirements, zero generation.
+5. **Shoulders of Giants** - survey proven solutions before inventing.
+6. **Scaffold** - christen the agent first per **The Iron Law**, then produce `AGENTS.md` (constitution, titled with its codename) + one-line `CLAUDE.md` pointer + `skills/` pipeline stations.
 
-1. **Requirement Gate** - vague requirements, zero generation.
-2. **Shoulders of Giants** - survey proven solutions before inventing.
-3. **Scaffold** - christen the agent first per **The Iron Law**, then produce `AGENTS.md` (constitution, titled with its codename) + one-line `CLAUDE.md` pointer + `skills/` pipeline stations.
+![image-20260806213208281](./assets/image-20260806213208281.png)
 
 ## 安装 / Installation
 
@@ -84,6 +91,7 @@ $genesis-ouroboros 帮我创建一个数据分析领域的 agent
 genesis-ouroboros-repo/
 ├── README.md                  # 你正在读的这个故事
 ├── LICENSE                    # MIT
+├── assets/                    # README 配图 / README illustrations
 └── genesis-ouroboros/         # 可安装的 skill 本体
     ├── SKILL.md               # 中英双语创世指令（九条原则 + 运行细则）
     └── agents/openai.yaml     # Codex UI 元数据
