@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 # maybe-devour.sh — Ring 2 trigger
 # Checks .ouroboros/state.json and triggers devour loop if threshold reached.
-# Call this at the end of each distillation cycle.
+# SAFE VERSION: uses jq + stdin (no variable interpolation into Python), 
+# validates state.json schema, handles spaces in paths.
 set -euo pipefail
 
 STATE_DIR="${AGENT_HOME:-.}/.ouroboros"
@@ -9,34 +10,46 @@ STATE_FILE="$STATE_DIR/state.json"
 N_DEFAULT=10
 LESSONS_HARD_LIMIT=20
 
-# Initialize state if missing
+# Initialize state if missing (restrictive permissions)
 if [ ! -f "$STATE_FILE" ]; then
   mkdir -p "$STATE_DIR"
-  cat > "$STATE_FILE" << 'EOF'
+  ( umask 077; cat > "$STATE_FILE" << 'EOF'
 {
   "distill_count": 0,
   "last_devour_at": null,
-  "lessons_per_skill": {},
   "devour_n": 10
 }
 EOF
+  )
   echo "[devour] Initialized $STATE_FILE"
 fi
 
-# Increment distill count
-DISTILL_COUNT=$(python3 -c "import json; print(json.load(open('$STATE_FILE'))['distill_count'])")
-DEVOUR_N=$(python3 -c "import json; print(json.load(open('$STATE_FILE')).get('devour_n', $N_DEFAULT))")
+# Read state values via jq (no Python interpolation — SEC-01/02 fix)
+# Validate schema: distill_count must be integer 0..999999
+DISTILL_COUNT=$(jq -r '.distill_count | if type == "number" and . >= 0 and . < 1000000 then . else "INVALID" end' "$STATE_FILE")
+DEVOUR_N=$(jq -r '.devour_n | if type == "number" and . >= 1 and . < 1000 then . else '"$N_DEFAULT"' end' "$STATE_FILE")
+
+if [ "$DISTILL_COUNT" = "INVALID" ] || ! [[ "$DISTILL_COUNT" =~ ^[0-9]+$ ]]; then
+  echo "[devour] ERROR: corrupt state.json — distill_count is not a valid integer. Resetting."
+  DISTILL_COUNT=0
+fi
+if ! [[ "$DEVOUR_N" =~ ^[0-9]+$ ]]; then
+  DEVOUR_N=$N_DEFAULT
+fi
+
 NEW_COUNT=$((DISTILL_COUNT + 1))
 
 # Check content-driven trigger: any lessons.md exceeds hard limit?
+# Fix SEC-03: use -print0 + while read -d '' to handle spaces in paths
 OVERFLOW=0
-for lf in $(find . -name "lessons.md" -not -path "./.ouroboros/*" 2>/dev/null); do
+while IFS= read -r -d '' lf; do
+  # Count lesson headers (lines starting with ###)
   COUNT=$(grep -c "^### " "$lf" 2>/dev/null || echo 0)
   if [ "$COUNT" -gt "$LESSONS_HARD_LIMIT" ]; then
     echo "[devour] WARNING: $lf has $COUNT entries (limit: $LESSONS_HARD_LIMIT)"
     OVERFLOW=1
   fi
-done
+done < <(find . -name "lessons.md" -not -path "./.git/*" -not -path "./.ouroboros/*" -print0 2>/dev/null)
 
 # Decide whether to trigger
 NEEDS_DEVOUR=0
@@ -50,36 +63,20 @@ elif [ "$OVERFLOW" -eq 1 ]; then
   REASON="one or more lessons.md exceeded $LESSONS_HARD_LIMIT entries"
 fi
 
-# Update state
-python3 -c "
-import json
-with open('$STATE_FILE', 'r') as f:
-    s = json.load(f)
-s['distill_count'] = $NEW_COUNT
-with open('$STATE_FILE', 'w') as f:
-    json.dump(s, f, indent=2)
-"
+# Update state via jq (no variable interpolation — SEC-01/02 fix)
+jq --argjson count "$NEW_COUNT" '.distill_count = $count' "$STATE_FILE" > "$STATE_FILE.tmp" && mv "$STATE_FILE.tmp" "$STATE_FILE"
 
 if [ "$NEEDS_DEVOUR" -eq 1 ]; then
   echo "[devour] TRIGGER: $REASON"
-  echo "[devour] Run the devour checklist manually or invoke the devour agent:"
+  echo "[devour] Run the devour checklist:"
   echo "[devour]   1. Merge duplicate lessons within each lessons.md"
-  echo "[devour]   2. Prune SKILL.md rules superseded by lessons.md remedies"
-  echo "[devour]   3. Run check-contracts.sh to repair broken contracts"
-  echo "[devour]   4. Run check-orphans.sh to sweep orphan scripts"
+  echo "[devour]   2. Prune SKILL.md rules superseded by lessons.md"
+  echo "[devour]   3. Run check-contracts.sh"
+  echo "[devour]   4. Run check-orphans.sh"
 
-  # Reset counter after devour
-  python3 -c "
-import json
-with open('$STATE_FILE', 'r') as f:
-    s = json.load(f)
-s['distill_count'] = 0
-s['last_devour_at'] = import_module_name if False else None
-import datetime
-s['last_devour_at'] = datetime.date.today().isoformat()
-with open('$STATE_FILE', 'w') as f:
-    json.dump(s, f, indent=2)
-"
+  # Reset counter + record date
+  TODAY=$(date +%Y-%m-%d)
+  jq --argjson count 0 --arg date "$TODAY" '.distill_count = $count | .last_devour_at = $date' "$STATE_FILE" > "$STATE_FILE.tmp" && mv "$STATE_FILE.tmp" "$STATE_FILE"
   echo "[devour] Counter reset. State updated."
 else
   echo "[devour] No trigger. distill_count=$NEW_COUNT/$DEVOUR_N"
