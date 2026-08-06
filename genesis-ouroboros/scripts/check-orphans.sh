@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # check-orphans.sh — Principle 2 enforcement
-# Scans all scripts/ directories and finds scripts not referenced by any SKILL.md.
+# Scans all scripts/ dirs, finds scripts not referenced by any SKILL.md.
+# SAFE VERSION: uses -print0 to handle spaces in paths (SEC-03 fix).
 set -euo pipefail
 
 echo "=== Orphan Script Check ==="
@@ -8,13 +9,14 @@ echo ""
 
 ORPHANS_FOUND=0
 
-for script_dir in $(find . -type d -name "scripts" -not -path "./.git/*" 2>/dev/null); do
+# Fix SEC-03: use -print0 + while read -d '' for space-safe iteration
+while IFS= read -r -d '' script_dir; do
   for script in "$script_dir"/*; do
     [ -f "$script" ] || continue
     script_name=$(basename "$script")
 
-    # Search for this script name in all SKILL.md files
-    refs=$(grep -rl "$script_name" --include="SKILL.md" . 2>/dev/null | wc -l)
+    # Search for this script name in all SKILL.md files (also space-safe)
+    refs=$(grep -rl --include="SKILL.md" -F "$script_name" . 2>/dev/null | wc -l)
 
     if [ "$refs" -eq 0 ]; then
       echo "  ⚠️  ORPHAN: $script (not referenced by any SKILL.md)"
@@ -23,11 +25,11 @@ for script_dir in $(find . -type d -name "scripts" -not -path "./.git/*" 2>/dev/
       echo "  ✅ $script_name — referenced in $refs SKILL.md(s)"
     fi
   done
-done
+done < <(find . -type d -name "scripts" -not -path "./.git/*" -print0 2>/dev/null)
 
 echo ""
 if [ "$ORPHANS_FOUND" -gt 0 ]; then
-  echo "❌ Found $ORPHANS_FOUND orphan script(s). Mark deprecated or assign to a skill."
+  echo "❌ Found $ORPHANS_FOUND orphan script(s). Assign to a skill or mark deprecated."
   exit 1
 else
   echo "✅ All scripts belong to a skill."
