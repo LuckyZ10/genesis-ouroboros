@@ -3,6 +3,8 @@
 > 一个会下蛋的 skill：它不生成功能，它生下会自我进化的 agent。
 > A skill that lays eggs: it doesn't build features - it births agents that evolve themselves.
 
+> 🐍 **GitHub:** https://github.com/LuckyZ10/genesis-ouroboros  ·  `git clone https://github.com/LuckyZ10/genesis-ouroboros.git`
+
 ![image-20260806213321810](./assets/image-20260806213321810.png)
 
 ## 这个故事从哪来 / Origin Story
@@ -71,7 +73,13 @@ Copy-Item -Recurse genesis-ouroboros "$env:USERPROFILE\.codex\skills\"
 cp -r genesis-ouroboros ~/.codex/skills/
 ```
 
-或者直接从 GitHub 安装（push 之后）：
+或者从 GitHub 下载 / 克隆：
+
+```bash
+git clone https://github.com/LuckyZ10/genesis-ouroboros.git
+```
+
+或一键安装：
 
 ```
 $skill-installer install from LuckyZ10/genesis-ouroboros
