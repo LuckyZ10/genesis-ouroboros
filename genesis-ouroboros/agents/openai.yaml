@@ -1,3 +1,3 @@
 display_name: Genesis Ouroboros
-short_description: Genesis constitution for scaffolding a new self-evolving agent
+short_description: Scaffold a self-evolving agent with constitution, pipeline skills, and enforcement rings
 default_prompt: Create a new agent scaffold following the genesis constitution
