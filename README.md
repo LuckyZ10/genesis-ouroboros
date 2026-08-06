@@ -1,9 +1,11 @@
 # genesis-ouroboros
 
 > A skill that births self-evolving agents — with a constitution, a pipeline, and the teeth to enforce both.
-> 一个会下蛋的 skill：它不生成功能，它生下会自我进化的 agent。
 
 > 🐍 https://github.com/LuckyZ10/genesis-ouroboros  ·  `git clone https://github.com/LuckyZ10/genesis-ouroboros.git`
+
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Status: Experimental](https://img.shields.io/badge/Status-Experimental-orange.svg)]()
 
 ---
 
@@ -54,16 +56,7 @@ After creating many agents, the same failure modes repeat:
 | 🟠 | **Devour Loop** | Periodically merge duplicates, prune stale rules, sweep orphans |
 | 🔴 | **Conflict Arbitration** | Pipeline integrity > backward compat > distillation > new features |
 
-> **进化不是无限堆积，是有能力丢弃。**
-> *Evolution isn't infinite accumulation — it's the capacity to discard.*
-
-Full details: [SKILL.md](./genesis-ouroboros/SKILL.md)
-
----
-
-## Origin Story
-
-This skill was born from a handwritten list of hard-earned lessons. The name **ouroboros** — the serpent devouring and regenerating itself — captures the soul: every interaction feeds the agent's evolution, and the devour loop recycles what no longer serves it.
+> Evolution is the capacity to discard. Full details: [SKILL.md](./genesis-ouroboros/SKILL.md)
 
 ---
 
@@ -73,16 +66,26 @@ This skill was born from a handwritten list of hard-earned lessons. The name **o
 genesis-ouroboros/
 ├── README.md
 ├── LICENSE                         # MIT
-├── assets/                         # README illustrations
+├── CONTRIBUTING.md                 # How to contribute
+├── CHANGELOG.md                    # Version history
+├── CODE_OF_CONDUCT.md              # Contributor Covenant 2.1
 └── genesis-ouroboros/              # The installable skill
     ├── SKILL.md                    # Constitution + rings + operating rules
     ├── agents/openai.yaml          # Codex UI metadata
-    └── scripts/                    # Enforcement teeth
+    └── scripts/                    # Enforcement teeth (chmod +x)
         ├── maybe-devour.sh         # Ring 2 trigger
         ├── check-orphans.sh        # Principle 2 enforcement
         └── check-contracts.sh      # Principle 6 enforcement
 ```
 
+## Status
+
+**Experimental.** Single maintainer, no test suite yet, breaking changes likely. Feedback welcome via Issues.
+
+## Related Projects
+
+- [eLafo/ouroboros](https://github.com/eLafo/ouroboros) — Artifact tooling for Claude Code (skill/command/hook builders). genesis-ouroboros focuses on *constitutional scaffolding* (AGENTS.md + pipeline + enforcement), not artifact generation.
+
 ## License
 
-MIT
+MIT — see [LICENSE](./LICENSE)
