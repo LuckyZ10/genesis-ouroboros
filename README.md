@@ -67,7 +67,7 @@ cp -r genesis-ouroboros ~/.codex/skills/
 或者直接从 GitHub 安装（push 之后）：
 
 ```
-$skill-installer install from <your-github-user>/genesis-ouroboros
+$skill-installer install from LuckyZ10/genesis-ouroboros
 ```
 
 ## 用法 / Usage
