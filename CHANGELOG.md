@@ -2,6 +2,11 @@
 
 All notable changes to genesis-ouroboros. Format: [Keep a Changelog](https://keepachangelog.com/), [SemVer](https://semver.org/).
 
+## [4.0.0] — 2026-11-04
+
+### Changed
+- Reverted the skill to the original simple version (nine principles, Iron Law, deliverables, operating rules). v3.1.0 remains available in git history.
+
 ## [3.1.0] — 2026-08-06
 
 ### Security
