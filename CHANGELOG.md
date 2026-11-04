@@ -6,6 +6,7 @@ All notable changes to genesis-ouroboros. Format: [Keep a Changelog](https://kee
 
 ### Changed
 - Reverted the skill to the original simple version (nine principles, Iron Law, deliverables, operating rules). v3.1.0 remains available in git history.
+- Aligned README, CONTRIBUTING, and openai.yaml with the original skill, and removed the helper scripts (still in git history).
 
 ## [3.1.0] — 2026-08-06
 
